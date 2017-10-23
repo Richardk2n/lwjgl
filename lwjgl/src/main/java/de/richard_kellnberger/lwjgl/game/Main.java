@@ -4,7 +4,7 @@ import de.richard_kellnberger.lwjgl.engine.GameEngine;
 import de.richard_kellnberger.lwjgl.engine.IGameLogic;
 
 public class Main {
- 
+
     public static void main(String[] args) {
         try {
             boolean vSync = true;

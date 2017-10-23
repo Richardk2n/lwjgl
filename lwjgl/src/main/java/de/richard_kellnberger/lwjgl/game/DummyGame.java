@@ -5,6 +5,7 @@ import static org.lwjgl.glfw.GLFW.GLFW_KEY_UP;
 
 import de.richard_kellnberger.lwjgl.engine.IGameLogic;
 import de.richard_kellnberger.lwjgl.engine.Window;
+import de.richard_kellnberger.lwjgl.engine.graph.Mesh;
 
 public class DummyGame implements IGameLogic {
 
@@ -13,14 +14,30 @@ public class DummyGame implements IGameLogic {
     private float color = 0.0f;
 
     private final Renderer renderer;
-    
+
+    private Mesh mesh;
+
     public DummyGame() {
         renderer = new Renderer();
     }
-    
+
     @Override
     public void init() throws Exception {
         renderer.init();
+        float[] positions = new float[]{
+            -0.5f, 0.5f, 0.0f,
+            -0.5f, -0.5f, 0.0f,
+            0.5f, -0.5f, 0.0f,
+            0.5f, 0.5f, 0.0f,};
+        int[] indices = new int[]{
+            0, 1, 3, 3, 1, 2,};
+        float[] colours = new float[]{
+        		0.5f, 0.0f, 0.0f,
+        		0.0f, 0.5f, 0.0f,
+        		0.0f, 0.0f, 0.5f,
+        		0.0f, 0.5f, 0.5f,
+        		};
+        mesh = new Mesh(positions, colours, indices); //TODO 47
     }
 
     @Override
@@ -47,12 +64,13 @@ public class DummyGame implements IGameLogic {
     @Override
     public void render(Window window) {
         window.setClearColor(color, color, color, 0.0f);
-        renderer.render(window);
+        renderer.render(window, mesh);
     }
 
     @Override
     public void cleanup() {
         renderer.cleanup();
+        mesh.cleanUp();
     }
 
 }

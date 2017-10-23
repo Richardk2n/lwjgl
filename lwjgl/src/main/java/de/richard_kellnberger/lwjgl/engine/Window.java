@@ -16,9 +16,9 @@ public class Window {
     private int width;
 
     private int height;
-    
+
     private long windowHandle;
-    
+
     private boolean resized;
 
     private boolean vSync;
@@ -88,25 +88,25 @@ public class Window {
 
         // Make the window visible
         glfwShowWindow(windowHandle);
-        
+
         GL.createCapabilities();
 
         // Set the clear color
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     }
-    
+
     public void setClearColor(float r, float g, float b, float alpha) {
         glClearColor(r, g, b, alpha);
     }
-    
+
     public boolean isKeyPressed(int keyCode) {
         return glfwGetKey(windowHandle, keyCode) == GLFW_PRESS;
     }
-    
+
     public boolean windowShouldClose() {
         return glfwWindowShouldClose(windowHandle);
     }
-    
+
     public String getTitle() {
         return title;
     }
@@ -118,7 +118,7 @@ public class Window {
     public int getHeight() {
         return height;
     }
-    
+
     public boolean isResized() {
         return resized;
     }
