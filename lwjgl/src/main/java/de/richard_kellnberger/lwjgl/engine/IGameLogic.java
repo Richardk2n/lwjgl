@@ -2,13 +2,13 @@ package de.richard_kellnberger.lwjgl.engine;
 
 public interface IGameLogic {
 
-    void init() throws Exception;
+	void init(Window window) throws Exception;
 
-    void input(Window window);
+	void input(Window window);
 
-    void update(float interval);
+	void update(float interval);
 
-    void render(Window window);
+	void render(Window window);
 
-    void cleanup();
+	void cleanup();
 }

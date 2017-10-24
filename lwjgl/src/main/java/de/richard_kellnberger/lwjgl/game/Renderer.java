@@ -1,59 +1,81 @@
 package de.richard_kellnberger.lwjgl.game;
 
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL20.*;
-import static org.lwjgl.opengl.GL30.*;
+import org.joml.Matrix4f;
 
+import de.richard_kellnberger.lwjgl.engine.GameItem;
 import de.richard_kellnberger.lwjgl.engine.Utils;
 import de.richard_kellnberger.lwjgl.engine.Window;
-import de.richard_kellnberger.lwjgl.engine.graph.Mesh;
 import de.richard_kellnberger.lwjgl.engine.graph.ShaderProgram;
+import de.richard_kellnberger.lwjgl.engine.graph.Transformation;
+
+import static org.lwjgl.opengl.GL11.*;
 
 public class Renderer {
 
-    private ShaderProgram shaderProgram;
+	/**
+	 * Field of View in Radians
+	 */
+	private static final float FOV = (float) Math.toRadians(60.0f);
 
-    public Renderer() {
-    }
+	private static final float Z_NEAR = 0.01f;
 
-    public void init() throws Exception {
-        shaderProgram = new ShaderProgram();
-        shaderProgram.createVertexShader(Utils.loadResource("/vertex.vs"));
-        shaderProgram.createFragmentShader(Utils.loadResource("/fragment.fs"));
-        shaderProgram.link();
-    }
+	private static final float Z_FAR = 1000.f;
 
-    public void clear() {
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    }
+	private ShaderProgram shaderProgram;
 
-    public void render(Window window, Mesh mesh) {
-        clear();
+	private Transformation transformation;
 
-        if (window.isResized()) {
-            glViewport(0, 0, window.getWidth(), window.getHeight());
-            window.setResized(false);
-        }
+	public Renderer() {
+		transformation = new Transformation();
+	}
 
-        shaderProgram.bind();
+	public void init(Window window) throws Exception {
+		// Create shader
+		shaderProgram = new ShaderProgram();
+		shaderProgram.createVertexShader(Utils.loadResource("/vertex.vs"));
+		shaderProgram.createFragmentShader(Utils.loadResource("/fragment.fs"));
+		shaderProgram.link();
 
-        // Draw the mesh
-        glBindVertexArray(mesh.getVaoId());
-        glEnableVertexAttribArray(0);
-        glEnableVertexAttribArray(1);
-        glDrawElements(GL_TRIANGLES, mesh.getVertexCount(), GL_UNSIGNED_INT, 0);
+		// Create uniforms for world and projection matrices
+		shaderProgram.createUniform("projectionMatrix");
+		shaderProgram.createUniform("worldMatrix");
+	}
 
-        // Restore state
-        glDisableVertexAttribArray(0);
-        glDisableVertexAttribArray(1);
-        glBindVertexArray(0);
+	public void clear() {
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	}
 
-        shaderProgram.unbind();
-    }
+	public void render(Window window, GameItem[] gameItems) {
+		clear();
 
-    public void cleanup() {
-        if (shaderProgram != null) {
-            shaderProgram.cleanup();
-        }
-    }
+		if (window.isResized()) {
+			glViewport(0, 0, window.getWidth(), window.getHeight());
+			window.setResized(false);
+		}
+
+		shaderProgram.bind();
+
+		// Update projection Matrix
+		Matrix4f projectionMatrix = transformation.getProjectionMatrix(FOV, window.getWidth(), window.getHeight(),
+				Z_NEAR, Z_FAR);
+		shaderProgram.setUniform("projectionMatrix", projectionMatrix);
+
+		// Render each gameItem
+		for (GameItem gameItem : gameItems) {
+			// Set world matrix for this item
+			Matrix4f worldMatrix = transformation.getWorldMatrix(gameItem.getPosition(), gameItem.getRotation(),
+					gameItem.getScale());
+			shaderProgram.setUniform("worldMatrix", worldMatrix);
+			// Render the mesh for this game item
+			gameItem.getMesh().render();
+		}
+
+		shaderProgram.unbind();
+	}
+
+	public void cleanup() {
+		if (shaderProgram != null) {
+			shaderProgram.cleanup();
+		}
+	}
 }

@@ -1,7 +1,6 @@
 #version 330
 
-in vec3 exColour;
-
+in  vec3 exColour;
 out vec4 fragColor;
 
 void main()
