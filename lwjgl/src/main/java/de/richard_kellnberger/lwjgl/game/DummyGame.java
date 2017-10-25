@@ -1,21 +1,28 @@
 package de.richard_kellnberger.lwjgl.game;
 
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_DOWN;
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_UP;
+import static org.lwjgl.glfw.GLFW.*;
+
+import org.joml.Vector2f;
+import org.joml.Vector3f;
 
 import de.richard_kellnberger.lwjgl.engine.GameItem;
 import de.richard_kellnberger.lwjgl.engine.IGameLogic;
+import de.richard_kellnberger.lwjgl.engine.MouseInput;
 import de.richard_kellnberger.lwjgl.engine.Window;
+import de.richard_kellnberger.lwjgl.engine.graph.Camera;
 import de.richard_kellnberger.lwjgl.engine.graph.Mesh;
 import de.richard_kellnberger.lwjgl.engine.graph.Texture;
 
 public class DummyGame implements IGameLogic {
 
-    private int direction = 0;
-
-    private float color = 0.0f;
-
+	private static final float CAMERA_POS_STEP = 0.2f;
+	private static final float MOUSE_SENSITIVITY = 0.4f;
+	
     private final Renderer renderer;
+    
+    private final Camera camera;
+    
+    private final Vector3f cameraInc;
     
     private Mesh mesh;
     
@@ -23,6 +30,8 @@ public class DummyGame implements IGameLogic {
     
     public DummyGame() {
         renderer = new Renderer();
+    	camera = new Camera();
+    	cameraInc = new Vector3f(0, 0, 0);
     }
     
     @Override
@@ -114,43 +123,52 @@ public class DummyGame implements IGameLogic {
                 4, 6, 7, 5, 4, 7,};
         Texture texture = new Texture("/textures/grassblock.png");
         mesh = new Mesh(positions, textCoords, indices, texture);
-        GameItem gameItem = new GameItem(mesh);
-        gameItem.setPosition(0, 0, -2);
-        gameItems = new GameItem[] { gameItem };
+        GameItem gameItem1 = new GameItem(mesh);
+        gameItem1.setPosition(0, 0, 0);
+        GameItem gameItem2 = new GameItem(mesh);
+        gameItem2.setPosition(1, 0, 0);
+        GameItem gameItem3 = new GameItem(mesh);
+        gameItem3.setPosition(0, 0, -1);
+        GameItem gameItem4 = new GameItem(mesh);
+        gameItem4.setPosition(1, 0, -1);
+        gameItems = new GameItem[]{gameItem1, gameItem2, gameItem3, gameItem4}; //TODO 83
     }
 
     @Override
-    public void input(Window window) {
-        if (window.isKeyPressed(GLFW_KEY_UP)) {
-            direction = 1;
-        } else if (window.isKeyPressed(GLFW_KEY_DOWN)) {
-            direction = -1;
-        } else {
-            direction = 0;
-        }
+    public void input(Window window, MouseInput mouseInput) {
+    	cameraInc.set(0, 0, 0);
+		if (window.isKeyPressed(GLFW_KEY_W)) {
+			cameraInc.z = -1;
+		} else if (window.isKeyPressed(GLFW_KEY_S)) {
+			cameraInc.z = 1;
+		}
+		if (window.isKeyPressed(GLFW_KEY_A)) {
+			cameraInc.x = -1;
+		} else if (window.isKeyPressed(GLFW_KEY_D)) {
+			cameraInc.x = 1;
+		}
+		if (window.isKeyPressed(GLFW_KEY_LEFT_SHIFT)) {
+			cameraInc.y = -1;
+		} else if (window.isKeyPressed(GLFW_KEY_SPACE)) {
+			cameraInc.y = 1;
+		}
     }
 
     @Override
-    public void update(float interval) {
-        color += direction * 0.01f;
-        if (color > 1) {
-            color = 1.0f;
-        } else if (color < 0) {
-            color = 0.0f;
-        }
+    public void update(float interval, MouseInput mouseInput) {
+        // Update camera position
+    	camera.movePosition(cameraInc.x * CAMERA_POS_STEP, cameraInc.y * CAMERA_POS_STEP, cameraInc.z * CAMERA_POS_STEP);
         
-        // Update rotation angle
-        float rotation = gameItems[0].getRotation().x + 1.5f;
-        if (rotation > 360) {
-        	rotation = 0;
-        }
-        gameItems[0].setRotation(rotation, rotation, rotation);
+        // Update camera based on mouse
+    	if(mouseInput.isRightButtonPressed()) {
+    		Vector2f rotVec = mouseInput.getDisplVec();
+    		camera.moveRotation(rotVec.x * MOUSE_SENSITIVITY, rotVec.y * MOUSE_SENSITIVITY, 0);
+    	}
     }
 
     @Override
     public void render(Window window) {
-        window.setClearColor(color, color, color, 0.0f);
-        renderer.render(window, gameItems);
+        renderer.render(window, camera, gameItems);
     }
 
     @Override

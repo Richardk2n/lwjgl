@@ -89,7 +89,7 @@ public class Window {
 		// Set the clear color
 		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 		
-		glEnable(GL_DEPTH_TEST);//TODO 64
+		glEnable(GL_DEPTH_TEST);
 	}
 
 	public void setClearColor(float r, float g, float b, float alpha) {
@@ -102,6 +102,10 @@ public class Window {
 
 	public boolean windowShouldClose() {
 		return glfwWindowShouldClose(windowHandle);
+	}
+	
+	public long getWindowHandle() {
+		return windowHandle;
 	}
 
 	public String getTitle() {
