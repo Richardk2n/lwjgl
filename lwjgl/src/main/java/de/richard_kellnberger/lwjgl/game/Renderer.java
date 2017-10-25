@@ -32,13 +32,14 @@ public class Renderer {
 	public void init(Window window) throws Exception {
 		// Create shader
 		shaderProgram = new ShaderProgram();
-		shaderProgram.createVertexShader(Utils.loadResource("/vertex.vs"));
-		shaderProgram.createFragmentShader(Utils.loadResource("/fragment.fs"));
+		shaderProgram.createVertexShader(Utils.loadResource("/shaders/vertex.vs"));
+		shaderProgram.createFragmentShader(Utils.loadResource("/shaders/fragment.fs"));
 		shaderProgram.link();
 
 		// Create uniforms for world and projection matrices
 		shaderProgram.createUniform("projectionMatrix");
 		shaderProgram.createUniform("worldMatrix");
+		shaderProgram.createUniform("texture_sampler");
 	}
 
 	public void clear() {
@@ -60,6 +61,8 @@ public class Renderer {
 				Z_NEAR, Z_FAR);
 		shaderProgram.setUniform("projectionMatrix", projectionMatrix);
 
+		shaderProgram.setUniform("texture_sampler", 0);
+		
 		// Render each gameItem
 		for (GameItem gameItem : gameItems) {
 			// Set world matrix for this item
