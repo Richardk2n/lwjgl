@@ -6,6 +6,7 @@ import de.richard_kellnberger.lwjgl.engine.GameItem;
 import de.richard_kellnberger.lwjgl.engine.Utils;
 import de.richard_kellnberger.lwjgl.engine.Window;
 import de.richard_kellnberger.lwjgl.engine.graph.Camera;
+import de.richard_kellnberger.lwjgl.engine.graph.Mesh;
 import de.richard_kellnberger.lwjgl.engine.graph.ShaderProgram;
 import de.richard_kellnberger.lwjgl.engine.graph.Transformation;
 
@@ -41,6 +42,10 @@ public class Renderer {
 		shaderProgram.createUniform("projectionMatrix");
 		shaderProgram.createUniform("modelViewMatrix");
 		shaderProgram.createUniform("texture_sampler");
+		
+		// Create uniform for default colour and the flag that controls it
+		shaderProgram.createUniform("colour");
+		shaderProgram.createUniform("useColour");
 	}
 
 	public void clear() {
@@ -69,11 +74,14 @@ public class Renderer {
 		
 		// Render each gameItem
 		for (GameItem gameItem : gameItems) {
+			Mesh mesh = gameItem.getMesh();
 			// Set model view matrix for this item
 			Matrix4f modelViewMatrix = transformation.getModelViewMatrix(gameItem, viewMatrix);
 			shaderProgram.setUniform("modelViewMatrix", modelViewMatrix);
 			// Render the mesh for this game item
-			gameItem.getMesh().render();
+			shaderProgram.setUniform("colour", mesh.getColor());
+			shaderProgram.setUniform("useColour", mesh.isTextured() ? 0 : 1);
+			mesh.render();
 		}
 
 		shaderProgram.unbind();

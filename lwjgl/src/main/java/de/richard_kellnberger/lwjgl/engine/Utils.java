@@ -1,6 +1,10 @@
 package de.richard_kellnberger.lwjgl.engine;
 
+import java.io.BufferedReader;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class Utils {
@@ -13,5 +17,16 @@ public class Utils {
 		}
 		return result;
 	}
+	
+	public static List<String> readAllLines(String fileName) throws Exception {
+        List<String> list = new ArrayList<String>();
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(Utils.class.getResourceAsStream(fileName)))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                list.add(line);
+            }
+        }
+        return list;
+    }
 
 }
