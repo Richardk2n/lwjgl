@@ -79,6 +79,18 @@ public class ShaderProgram {
 		setUniform(uniformName + ".hasTexture", material.isTextured() ? 1 : 0);
 		setUniform(uniformName + ".reflectance", material.getReflectance());
 	}
+	
+	public void createDirectionalLightUniform(String uniformName) throws Exception {
+		createUniform(uniformName + ".colour");
+		createUniform(uniformName + ".direction");
+		createUniform(uniformName + ".intensity");
+	}
+	
+	public void setUniform(String uniformName, DirectionalLight dirLight) {
+		setUniform(uniformName + ".colour", dirLight.getColor());
+		setUniform(uniformName + ".direction", dirLight.getDirection());
+		setUniform(uniformName + ".intensity", dirLight.getIntensity());
+	}
 
 	public void setUniform(String uniformName, int value) {
 		glUniform1i(uniforms.get(uniformName), value);
