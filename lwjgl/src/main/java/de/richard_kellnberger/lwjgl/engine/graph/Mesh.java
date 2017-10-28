@@ -11,12 +11,9 @@ import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.*;
 
-import org.joml.Vector3f;
 import org.lwjgl.system.MemoryUtil;
 
 public class Mesh {
-	
-	private static final Vector3f DEFAULT_COLOUR = new Vector3f(1.0f, 1.0f, 1.0f);
 
 	private final int vaoId;
 
@@ -24,9 +21,7 @@ public class Mesh {
 
 	private final int vertexCount;
 
-	private Texture texture;
-
-	private Vector3f colour;
+    private Material material;
 
 	public Mesh(float[] positions, float[] textCoords, float[] normals, int[] indices) {
 		FloatBuffer posBuffer = null;
@@ -34,7 +29,6 @@ public class Mesh {
 		FloatBuffer vecNormalsBuffer = null;
 		IntBuffer indicesBuffer = null;
 		try {
-			colour = DEFAULT_COLOUR;
 			vertexCount = indices.length;
 			vboList = new ArrayList<Integer>();
 
@@ -91,23 +85,16 @@ public class Mesh {
 		}
 	}
 
-	public Vector3f getColor() {
-		return colour;
-	}
+	public Material getMaterial() {
+        return material;
+    }
 
-	public Texture getTexture() {
-		return texture;
-	}
-	
-	public void setTexture(Texture texture) {
-		this.texture = texture;
-	}
-	
-	public boolean isTextured() {
-		return texture != null;
-	}
+    public void setMaterial(Material material) {
+        this.material = material;
+    }
 
 	public void render() {
+		Texture texture = material.getTexture();
 		if (texture != null) {
 			// Activate first texture unit
 			glActiveTexture(GL_TEXTURE0);
@@ -148,6 +135,7 @@ public class Mesh {
 		}
 
 		// Delete the texture
+		Texture texture = material.getTexture();
 		if (texture != null) {
 			texture.cleanup();
 		}
