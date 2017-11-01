@@ -6,7 +6,7 @@ import de.richard_kellnberger.lwjgl.engine.graph.Mesh;
 
 public class GameItem {
 
-	private final Mesh mesh;
+	private Mesh mesh;
 
 	private final Vector3f position;
 
@@ -14,11 +14,15 @@ public class GameItem {
 
 	private final Vector3f rotation;
 
+	public GameItem() {
+        position = new Vector3f(0, 0, 0);
+        scale = 1;
+        rotation = new Vector3f(0, 0, 0);
+    }
+	
 	public GameItem(Mesh mesh) {
+		this();
 		this.mesh = mesh;
-		position = new Vector3f(0, 0, 0);
-		scale = 1;
-		rotation = new Vector3f(0, 0, 0);
 	}
 
 	public Vector3f getPosition() {
@@ -48,9 +52,13 @@ public class GameItem {
 		this.rotation.y = y;
 		this.rotation.z = z;
 	}
-
-	public Mesh getMesh() {
-		return mesh;
-	}
+    
+    public Mesh getMesh() {
+        return mesh;
+    }
+    
+    public void setMesh(Mesh mesh) {
+        this.mesh = mesh;
+    }
 
 }
