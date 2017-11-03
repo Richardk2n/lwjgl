@@ -2,9 +2,9 @@ package de.richard_kellnberger.lwjgl.engine;
 
 import org.joml.Vector3f;
 
-import de.richard_kellnberger.lwjgl.engine.graph.DirectionalLight;
-import de.richard_kellnberger.lwjgl.engine.graph.PointLight;
-import de.richard_kellnberger.lwjgl.engine.graph.SpotLight;
+import de.richard_kellnberger.lwjgl.engine.graph.lights.DirectionalLight;
+import de.richard_kellnberger.lwjgl.engine.graph.lights.PointLight;
+import de.richard_kellnberger.lwjgl.engine.graph.lights.SpotLight;
 
 public class SceneLight {
 

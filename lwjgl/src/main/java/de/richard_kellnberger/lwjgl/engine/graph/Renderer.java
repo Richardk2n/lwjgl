@@ -4,13 +4,16 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
-import de.richard_kellnberger.lwjgl.engine.GameItem;
 import de.richard_kellnberger.lwjgl.engine.IHud;
 import de.richard_kellnberger.lwjgl.engine.Scene;
 import de.richard_kellnberger.lwjgl.engine.SceneLight;
-import de.richard_kellnberger.lwjgl.engine.SkyBox;
 import de.richard_kellnberger.lwjgl.engine.Utils;
 import de.richard_kellnberger.lwjgl.engine.Window;
+import de.richard_kellnberger.lwjgl.engine.graph.lights.DirectionalLight;
+import de.richard_kellnberger.lwjgl.engine.graph.lights.PointLight;
+import de.richard_kellnberger.lwjgl.engine.graph.lights.SpotLight;
+import de.richard_kellnberger.lwjgl.engine.items.GameItem;
+import de.richard_kellnberger.lwjgl.engine.items.SkyBox;
 
 import static org.lwjgl.opengl.GL11.*;
 

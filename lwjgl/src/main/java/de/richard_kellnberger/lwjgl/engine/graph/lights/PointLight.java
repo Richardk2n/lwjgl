@@ -1,4 +1,4 @@
-package de.richard_kellnberger.lwjgl.engine.graph;
+package de.richard_kellnberger.lwjgl.engine.graph.lights;
 
 import org.joml.Vector3f;
 

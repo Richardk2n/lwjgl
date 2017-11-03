@@ -10,6 +10,10 @@ import org.joml.Vector4f;
 import static org.lwjgl.opengl.GL20.*;
 import org.lwjgl.system.MemoryStack;
 
+import de.richard_kellnberger.lwjgl.engine.graph.lights.DirectionalLight;
+import de.richard_kellnberger.lwjgl.engine.graph.lights.PointLight;
+import de.richard_kellnberger.lwjgl.engine.graph.lights.SpotLight;
+
 public class ShaderProgram {
 
 	private final int programId;
@@ -68,7 +72,7 @@ public class ShaderProgram {
 	public void setUniform(String uniformName, Matrix4f value) {
 		try (MemoryStack stack = MemoryStack.stackPush()) {
 			// Dump the matrix into a float buffer
-			FloatBuffer fb = stack.mallocFloat(16);//TODO
+			FloatBuffer fb = stack.mallocFloat(16);//TODO optimize?
 			value.get(fb);
 			glUniformMatrix4fv(uniforms.get(uniformName), false, fb);
 		}

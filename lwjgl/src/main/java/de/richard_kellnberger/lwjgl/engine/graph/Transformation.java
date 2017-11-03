@@ -3,7 +3,7 @@ package de.richard_kellnberger.lwjgl.engine.graph;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
-import de.richard_kellnberger.lwjgl.engine.GameItem;
+import de.richard_kellnberger.lwjgl.engine.items.GameItem;
 
 public class Transformation {
 

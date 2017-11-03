@@ -14,7 +14,7 @@ import static org.lwjgl.opengl.GL30.*;
 
 import org.lwjgl.system.MemoryUtil;
 
-import de.richard_kellnberger.lwjgl.engine.GameItem;
+import de.richard_kellnberger.lwjgl.engine.items.GameItem;
 
 public class Mesh {
 

@@ -4,14 +4,14 @@ import java.awt.Font;
 
 import org.joml.Vector4f;
 
-import de.richard_kellnberger.lwjgl.engine.GameItem;
 import de.richard_kellnberger.lwjgl.engine.IHud;
-import de.richard_kellnberger.lwjgl.engine.TextItem;
 import de.richard_kellnberger.lwjgl.engine.Window;
 import de.richard_kellnberger.lwjgl.engine.graph.FontTexture;
 import de.richard_kellnberger.lwjgl.engine.graph.Material;
 import de.richard_kellnberger.lwjgl.engine.graph.Mesh;
 import de.richard_kellnberger.lwjgl.engine.graph.OBJLoader;
+import de.richard_kellnberger.lwjgl.engine.items.GameItem;
+import de.richard_kellnberger.lwjgl.engine.items.TextItem;
 
 public class Hud implements IHud {
 

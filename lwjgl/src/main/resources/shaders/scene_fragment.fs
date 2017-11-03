@@ -136,22 +136,22 @@ void main()
     setupColours(material, outTexCoord);
 
     vec4 diffuseSpecularComp = calcDirectionalLight(directionalLight, mvVertexPos, mvVertexNormal);
-    
-    for(int i = 0; i<MAX_POINT_LIGHTS; i++)
+
+    for (int i=0; i<MAX_POINT_LIGHTS; i++)
     {
-    	if(pointLights[i].intensity > 0)
-    	{
-    		diffuseSpecularComp += calcPointLight(pointLights[i], mvVertexPos, mvVertexNormal);
-    	}
+        if ( pointLights[i].intensity > 0 )
+        {
+            diffuseSpecularComp += calcPointLight(pointLights[i], mvVertexPos, mvVertexNormal); 
+        }
+    }
+
+    for (int i=0; i<MAX_SPOT_LIGHTS; i++)
+    {
+        if ( spotLights[i].pl.intensity > 0 )
+        {
+            diffuseSpecularComp += calcSpotLight(spotLights[i], mvVertexPos, mvVertexNormal);
+        }
     }
     
-    for(int i = 0; i < MAX_SPOT_LIGHTS; i++)
-    {
-    	if(spotLights[i].pl.intensity > 0)
-    	{
-    		diffuseSpecularComp += calcSpotLight(spotLights[i], mvVertexPos, mvVertexNormal);
-    	}
-    }
-    
-    fragColor = ambientC * vec4(ambientLight, 1) + diffuseSpecularComp;
+    fragColor = clamp(ambientC * vec4(ambientLight, 1) + diffuseSpecularComp, 0, 1);
 }

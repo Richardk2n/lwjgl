@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import de.richard_kellnberger.lwjgl.engine.graph.Mesh;
+import de.richard_kellnberger.lwjgl.engine.items.GameItem;
+import de.richard_kellnberger.lwjgl.engine.items.SkyBox;
 
 public class Scene {
 

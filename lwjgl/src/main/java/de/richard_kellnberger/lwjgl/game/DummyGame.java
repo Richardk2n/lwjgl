@@ -4,20 +4,17 @@ import static org.lwjgl.glfw.GLFW.*;
 
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-import de.richard_kellnberger.lwjgl.engine.GameItem;
+
 import de.richard_kellnberger.lwjgl.engine.IGameLogic;
 import de.richard_kellnberger.lwjgl.engine.MouseInput;
 import de.richard_kellnberger.lwjgl.engine.Scene;
 import de.richard_kellnberger.lwjgl.engine.SceneLight;
-import de.richard_kellnberger.lwjgl.engine.SkyBox;
 import de.richard_kellnberger.lwjgl.engine.Window;
 import de.richard_kellnberger.lwjgl.engine.graph.Camera;
-import de.richard_kellnberger.lwjgl.engine.graph.DirectionalLight;
-import de.richard_kellnberger.lwjgl.engine.graph.Material;
-import de.richard_kellnberger.lwjgl.engine.graph.Mesh;
-import de.richard_kellnberger.lwjgl.engine.graph.OBJLoader;
 import de.richard_kellnberger.lwjgl.engine.graph.Renderer;
-import de.richard_kellnberger.lwjgl.engine.graph.Texture;
+import de.richard_kellnberger.lwjgl.engine.graph.lights.DirectionalLight;
+import de.richard_kellnberger.lwjgl.engine.items.SkyBox;
+import de.richard_kellnberger.lwjgl.engine.items.Terrain;
 
 public class DummyGame implements IGameLogic {
 
@@ -36,6 +33,8 @@ public class DummyGame implements IGameLogic {
     private float lightAngle;
 
     private static final float CAMERA_POS_STEP = 0.05f;
+    
+    private Terrain terrain;
 
     public DummyGame() {
         renderer = new Renderer();
@@ -46,43 +45,34 @@ public class DummyGame implements IGameLogic {
 
     @Override
     public void init(Window window) throws Exception {
-    	renderer.init(window);
-    	
-    	scene = new Scene();
+        renderer.init(window);
+
+        scene = new Scene();
 
         float skyBoxScale = 50.0f;
+        float terrainScale = 10;
+        int terrainSize = 3;
+        float minY = -0.1f;
+        float maxY = 0.1f;
+        int textInc = 40;
+        terrain = new Terrain(terrainSize, terrainScale, minY, maxY, "/textures/heightmap.png", "/textures/terrain.png", textInc);
+        scene.setGameItems(terrain.getGameItems());
 
-        float reflectance = 1f;
-        //Mesh mesh = OBJLoader.loadMesh("/models/bunny.obj");
-        //Material material = new Material(new Vector3f(0.2f, 0.5f, 0.5f), reflectance);
-
-        Mesh mesh = OBJLoader.loadMesh("/models/cube.obj");
-        Texture texture = new Texture("/textures/grassblock.png");
-        Material material = new Material(texture, reflectance);
-
-        mesh.setMaterial(material);
-        
-        GameItem[] gameItems = new GameItem[10000];
-        for(int i = 0; i<100; i++) {
-        	for(int j = 0; j<100; j++) {
-                GameItem gameItem = new GameItem(mesh);
-                gameItem.setScale(0.5f);
-                gameItem.setPosition(i, 0, j);
-                gameItems[i*100 + j] = gameItem;
-        	}
-        }
-        scene.setGameItems(gameItems);
-        
-        // Setup SkyBox
+        // Setup  SkyBox
         SkyBox skyBox = new SkyBox("/models/skybox.obj", "/textures/skybox.png");
         skyBox.setScale(skyBoxScale);
         scene.setSkyBox(skyBox);
-        
+
         // Setup Lights
         setupLights();
-        
-        // create HUD
+
+        // Create HUD
         hud = new Hud("DEMO");
+
+        camera.getPosition().x = 0.0f;
+        camera.getPosition().z = 0.0f;
+        camera.getPosition().y = -0.2f;
+        camera.getRotation().x = 10.f;
     }
     
     private void setupLights() {
@@ -131,6 +121,12 @@ public class DummyGame implements IGameLogic {
 
         // Update camera position
         camera.movePosition(cameraInc.x * CAMERA_POS_STEP, cameraInc.y * CAMERA_POS_STEP, cameraInc.z * CAMERA_POS_STEP);
+        // Check if there has been a collision. If true, set the y position to the minimum height
+        Vector3f pos = camera.getPosition();
+        float height = terrain.getHeight(pos);
+        if(pos.y < height + 1) {
+        	camera.setPosition(pos.x, height + 1, pos.z); //TODO +1 is kind of bullshit
+        }
         
         SceneLight sceneLight = scene.getSceneLight();
 
