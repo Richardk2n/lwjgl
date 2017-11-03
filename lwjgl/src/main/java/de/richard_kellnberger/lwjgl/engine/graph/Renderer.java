@@ -110,7 +110,7 @@ public class Renderer {
 			window.setResized(false);
 		}
 
-        // Update projection and view atrices once per render cycle
+        // Update projection and view Matrices once per render cycle
         transformation.updateProjectionMatrix(FOV, window.getWidth(), window.getHeight(), Z_NEAR, Z_FAR);
         transformation.updateViewMatrix(camera);
 
