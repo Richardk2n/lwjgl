@@ -2,107 +2,111 @@ package de.richard_kellnberger.lwjgl.engine;
 
 public class GameEngine implements Runnable {
 
-	public static final int TARGET_FPS = 75;
+    public static final int TARGET_FPS = 75;
 
-	public static final int TARGET_UPS = 30;
+    public static final int TARGET_UPS = 30;
 
-	private final Window window;
+    private final Window window;
 
-	private final Thread gameLoopThread;
+    private final Thread gameLoopThread;
 
-	private final Timer timer;
+    private final Timer timer;
 
-	private final IGameLogic gameLogic;
-	
-	private final MouseInput mouseInput;
+    private final IGameLogic gameLogic;
 
-	public GameEngine(String windowTitle, int width, int height, boolean vSync, IGameLogic gameLogic) throws Exception {
-		gameLoopThread = new Thread(this, "GAME_LOOP_THREAD");
-		window = new Window(windowTitle, width, height, vSync);
-		mouseInput = new MouseInput();
-		this.gameLogic = gameLogic;
-		timer = new Timer();
-	}
+    private final MouseInput mouseInput;
 
-	public void start() {
-		String osName = System.getProperty("os.name");
-		if (osName.contains("Mac")) {
-			gameLoopThread.run();
-		} else {
-			gameLoopThread.start();
-		}
-	}
+    public GameEngine(String windowTitle, boolean vSync, IGameLogic gameLogic) throws Exception {
+        this(windowTitle, 0, 0, vSync, gameLogic);
+    }
 
-	@Override
-	public void run() {
-		try {
-			init();
-			gameLoop();
-		} catch (Exception excp) {
-			excp.printStackTrace();
-		} finally {
-			cleanup();
-		}
-	}
+    public GameEngine(String windowTitle, int width, int height, boolean vSync, IGameLogic gameLogic) throws Exception {
+        gameLoopThread = new Thread(this, "GAME_LOOP_THREAD");
+        window = new Window(windowTitle, width, height, vSync);
+        mouseInput = new MouseInput();
+        this.gameLogic = gameLogic;
+        timer = new Timer();
+    }
 
-	protected void init() throws Exception {
-		window.init();
-		timer.init();
-		gameLogic.init(window);
-		mouseInput.init(window);
-	}
+    public void start() {
+        String osName = System.getProperty("os.name");
+        if ( osName.contains("Mac") ) {
+            gameLoopThread.run();
+        } else {
+            gameLoopThread.start();
+        }
+    }
 
-	protected void gameLoop() {
-		float elapsedTime;
-		float accumulator = 0f;
-		float interval = 1f / TARGET_UPS;
+    @Override
+    public void run() {
+        try {
+            init();
+            gameLoop();
+        } catch (Exception excp) {
+            excp.printStackTrace();
+        } finally {
+            cleanup();
+        }
+    }
 
-		boolean running = true;
-		while (running && !window.windowShouldClose()) {
-			elapsedTime = timer.getElapsedTime();
-			accumulator += elapsedTime;
+    protected void init() throws Exception {
+        window.init();
+        timer.init();
+        mouseInput.init(window);
+        gameLogic.init(window);
+    }
 
-			input();
+    protected void gameLoop() {
+        float elapsedTime;
+        float accumulator = 0f;
+        float interval = 1f / TARGET_UPS;
 
-			while (accumulator >= interval) {
-				update(interval);
-				accumulator -= interval;
-			}
+        boolean running = true;
+        while (running && !window.windowShouldClose()) {
+            elapsedTime = timer.getElapsedTime();
+            accumulator += elapsedTime;
 
-			render();
+            input();
 
-			if (!window.isvSync()) {
-				sync();
-			}
-		}
-	}
+            while (accumulator >= interval) {
+                update(interval);
+                accumulator -= interval;
+            }
 
-	protected void cleanup() {
-		gameLogic.cleanup();
-	}
+            render();
 
-	private void sync() {
-		float loopSlot = 1f / TARGET_FPS;
-		double endTime = timer.getLastLoopTime() + loopSlot;
-		while (timer.getTime() < endTime) {
-			try {
-				Thread.sleep(1);
-			} catch (InterruptedException ie) {
-			}
-		}
-	}
+            if ( !window.isvSync() ) {
+                sync();
+            }
+        }
+    }
 
-	protected void input() {
-		mouseInput.input(window);
-		gameLogic.input(window, mouseInput);
-	}
+    protected void cleanup() {
+        gameLogic.cleanup();                
+    }
+    
+    private void sync() {
+        float loopSlot = 1f / TARGET_FPS;
+        double endTime = timer.getLastLoopTime() + loopSlot;
+        while (timer.getTime() < endTime) {
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException ie) {
+            }
+        }
+    }
 
-	protected void update(float interval) {
-		gameLogic.update(interval, mouseInput);
-	}
+    protected void input() {
+        mouseInput.input(window);
+        gameLogic.input(window, mouseInput);
+    }
 
-	protected void render() {
-		gameLogic.render(window);
-		window.update();
-	}
+    protected void update(float interval) {
+        gameLogic.update(interval, mouseInput);
+    }
+
+    protected void render() {
+        gameLogic.render(window);
+        window.update();
+    }
 }

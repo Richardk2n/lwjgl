@@ -17,9 +17,9 @@ public class Scene {
     private SkyBox skyBox;
     
     private SceneLight sceneLight;
-    
-    private Fog fog;
 
+    private Fog fog;
+    
     public Scene() {
         meshMap = new HashMap<Mesh, List<GameItem>>();
         fog = Fog.NOFOG;
@@ -78,5 +78,5 @@ public class Scene {
     public void setFog(Fog fog) {
         this.fog = fog;
     }
-    
+
 }

@@ -11,7 +11,7 @@ public class SceneLight {
     private Vector3f ambientLight;
     
     private Vector3f skyBoxLight;
-    
+
     private PointLight[] pointLightList;
     
     private SpotLight[] spotLightList;

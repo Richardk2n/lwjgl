@@ -9,23 +9,23 @@ import de.richard_kellnberger.lwjgl.engine.graph.Material;
 import de.richard_kellnberger.lwjgl.engine.graph.Mesh;
 
 public class TextItem extends GameItem {
-	
-	private static final float ZPOS = 0.0f;
-	
-	private static final int VERTICES_PER_QUAD = 4;
-	
-	private String text;
-	
-	private final FontTexture fontTexture;
-	
-	public TextItem(String text, FontTexture fontTexture) throws Exception {
-		super();
-		this.text = text;
-		this.fontTexture = fontTexture;
-		setMesh(buildMesh());
-	}
-	
-	private Mesh buildMesh() {
+
+    private static final float ZPOS = 0.0f;
+
+    private static final int VERTICES_PER_QUAD = 4;
+
+    private final FontTexture fontTexture;
+    
+    private String text;
+
+    public TextItem(String text, FontTexture fontTexture) throws Exception {
+        super();
+        this.text = text;
+        this.fontTexture = fontTexture;
+        setMesh(buildMesh());
+    }
+    
+    private Mesh buildMesh() {
         List<Float> positions = new ArrayList<Float>();
         List<Float> textCoords = new ArrayList<Float>();
         float[] normals   = new float[0];
@@ -85,15 +85,14 @@ public class TextItem extends GameItem {
         mesh.setMaterial(new Material(fontTexture.getTexture()));
         return mesh;
     }
-    
+
     public String getText() {
         return text;
     }
     
     public void setText(String text) {
         this.text = text;
-        getMesh().deleteBuffers();
-        setMesh(buildMesh());
+        this.getMesh().deleteBuffers();
+        this.setMesh(buildMesh());
     }
-
 }

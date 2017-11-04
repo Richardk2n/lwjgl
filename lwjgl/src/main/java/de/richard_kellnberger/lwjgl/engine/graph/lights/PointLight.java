@@ -8,7 +8,7 @@ public class PointLight {
 
     private Vector3f position;
 
-    protected float intensity;
+    private float intensity;
 
     private Attenuation attenuation;
     

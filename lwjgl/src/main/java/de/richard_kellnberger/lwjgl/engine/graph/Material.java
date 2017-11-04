@@ -11,7 +11,7 @@ public class Material {
     private Vector4f diffuseColour;
 
     private Vector4f specularColour;
-
+    
     private float reflectance;
 
     private Texture texture;
@@ -91,15 +91,14 @@ public class Material {
     }
     
     public boolean hasNormalMap() {
-    	return this.normalMap != null;
-    }
-    
-    public Texture getNormalMap() {
-    	return normalMap;
-    }
-    
-    public void setNormalMap(Texture normalMap) {
-    	this.normalMap = normalMap;
+        return this.normalMap != null;
     }
 
+    public Texture getNormalMap() {
+        return normalMap;
+    }
+
+    public void setNormalMap(Texture normalMap) {
+        this.normalMap = normalMap;
+    }
 }

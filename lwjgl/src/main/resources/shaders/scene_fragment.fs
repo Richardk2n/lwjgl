@@ -6,6 +6,7 @@ const int MAX_SPOT_LIGHTS = 5;
 in vec2 outTexCoord;
 in vec3 mvVertexNormal;
 in vec3 mvVertexPos;
+in vec4 mlightviewVertexPos;
 in mat4 outModelViewMatrix;
 
 out vec4 fragColor;
@@ -46,15 +47,15 @@ struct Material
     vec4 diffuse;
     vec4 specular;
     int hasTexture;
-    float reflectance;
     int hasNormalMap;
+    float reflectance;
 };
 
 struct Fog
 {
-	int active;
-	vec3 colour;
-	float density;
+    int activeFog;
+    vec3 colour;
+    float density;
 };
 
 uniform sampler2D texture_sampler;
@@ -66,6 +67,7 @@ uniform PointLight pointLights[MAX_POINT_LIGHTS];
 uniform SpotLight spotLights[MAX_SPOT_LIGHTS];
 uniform DirectionalLight directionalLight;
 uniform Fog fog;
+uniform sampler2D shadowMap;
 
 vec4 ambientC;
 vec4 diffuseC;
@@ -144,41 +146,67 @@ vec4 calcDirectionalLight(DirectionalLight light, vec3 position, vec3 normal)
 
 vec4 calcFog(vec3 pos, vec4 colour, Fog fog, vec3 ambientLight, DirectionalLight dirLight)
 {
-	vec3 fogColor = fog.colour * (ambientLight + dirLight.colour * dirLight.intensity);
-	
-	float distance = length(pos);
-	float fogFactor = 1.0/exp((distance * fog.density) * (distance * fog.density));
-	fogFactor = clamp(fogFactor, 0.0, 1.0);
-	
-	vec3 resultColour = mix(fogColor, colour.xyz, fogFactor);
-	return vec4(resultColour.xyz, colour.w);
+    vec3 fogColor = fog.colour * (ambientLight + dirLight.colour * dirLight.intensity);
+    float distance = length(pos);
+    float fogFactor = 1.0 / exp( (distance * fog.density)* (distance * fog.density));
+    fogFactor = clamp( fogFactor, 0.0, 1.0 );
+
+    vec3 resultColour = mix(fogColor, colour.xyz, fogFactor);
+    return vec4(resultColour.xyz, colour.w);
 }
 
 vec3 calcNormal(Material material, vec3 normal, vec2 text_coord, mat4 modelViewMatrix)
 {
-	vec3 newNormal = normal;
-	if(material.hasNormalMap == 1)
-	{
-		newNormal = texture(normalMap, text_coord).rgb;
-		newNormal = normalize(newNormal * 2 - 1);
-		newNormal = normalize(modelViewMatrix * vec4(newNormal, 0.0)).xyz;
-	}
-	return newNormal;
+    vec3 newNormal = normal;
+    if ( material.hasNormalMap == 1 )
+    {
+        newNormal = texture(normalMap, text_coord).rgb;
+        newNormal = normalize(newNormal * 2 - 1);
+        newNormal = normalize(modelViewMatrix * vec4(newNormal, 0.0)).xyz;
+    }
+    return newNormal;
 }
+
+float calcShadow(vec4 position)
+{
+    vec3 projCoords = position.xyz;
+    // Transform from screen coordinates to texture coordinates
+    projCoords = projCoords * 0.5 + 0.5;
+    float bias = 0.05;
+
+    float shadowFactor = 0.0;
+    vec2 inc = 1.0 / textureSize(shadowMap, 0);
+    for(int row = -1; row <= 1; ++row)
+    {
+        for(int col = -1; col <= 1; ++col)
+        {
+            float textDepth = texture(shadowMap, projCoords.xy + vec2(row, col) * inc).r; 
+            shadowFactor += projCoords.z - bias > textDepth ? 1.0 : 0.0;        
+        }    
+    }
+    shadowFactor /= 9.0;
+
+    if(projCoords.z > 1.0)
+    {
+        shadowFactor = 1.0;
+    }
+
+    return 1 - shadowFactor;
+} 
 
 void main()
 {
     setupColours(material, outTexCoord);
-    
-    vec3 currNormal = calcNormal(material, mvVertexNormal, outTexCoord, outModelViewMatrix);
 
-    vec4 diffuseSpecularComp = calcDirectionalLight(directionalLight, mvVertexPos, currNormal);
+    vec3 currNomal = calcNormal(material, mvVertexNormal, outTexCoord, outModelViewMatrix);
+
+    vec4 diffuseSpecularComp = calcDirectionalLight(directionalLight, mvVertexPos, currNomal);
 
     for (int i=0; i<MAX_POINT_LIGHTS; i++)
     {
         if ( pointLights[i].intensity > 0 )
         {
-            diffuseSpecularComp += calcPointLight(pointLights[i], mvVertexPos, currNormal); 
+            diffuseSpecularComp += calcPointLight(pointLights[i], mvVertexPos, currNomal); 
         }
     }
 
@@ -186,14 +214,15 @@ void main()
     {
         if ( spotLights[i].pl.intensity > 0 )
         {
-            diffuseSpecularComp += calcSpotLight(spotLights[i], mvVertexPos, currNormal);
+            diffuseSpecularComp += calcSpotLight(spotLights[i], mvVertexPos, currNomal);
         }
     }
     
-    fragColor = clamp(ambientC * vec4(ambientLight, 1) + diffuseSpecularComp, 0, 1);
-    
-    if(fog.active == 1)
+    float shadow = calcShadow(mlightviewVertexPos);
+    fragColor = clamp(ambientC * vec4(ambientLight, 1) + diffuseSpecularComp * shadow, 0, 1);
+
+    if ( fog.activeFog == 1 ) 
     {
-    	fragColor = calcFog(mvVertexPos, fragColor, fog, ambientLight, directionalLight);
+        fragColor = calcFog(mvVertexPos, fragColor, fog, ambientLight, directionalLight);
     }
 }

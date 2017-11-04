@@ -1,15 +1,11 @@
 package de.richard_kellnberger.lwjgl.game;
 
 import java.awt.Font;
-
 import org.joml.Vector4f;
 
 import de.richard_kellnberger.lwjgl.engine.IHud;
 import de.richard_kellnberger.lwjgl.engine.Window;
 import de.richard_kellnberger.lwjgl.engine.graph.FontTexture;
-import de.richard_kellnberger.lwjgl.engine.graph.Material;
-import de.richard_kellnberger.lwjgl.engine.graph.Mesh;
-import de.richard_kellnberger.lwjgl.engine.graph.OBJLoader;
 import de.richard_kellnberger.lwjgl.engine.items.GameItem;
 import de.richard_kellnberger.lwjgl.engine.items.TextItem;
 
@@ -19,47 +15,29 @@ public class Hud implements IHud {
 
     private static final String CHARSET = "ISO-8859-1";
 
-	private final GameItem[] gameItems;
+    private final GameItem[] gameItems;
 
-	private final TextItem statusTextItem;
+    private final TextItem statusTextItem;
 
-	private final GameItem compassItem;
+    public Hud(String statusText) throws Exception {
+        FontTexture fontTexture = new FontTexture(FONT, CHARSET);
+        this.statusTextItem = new TextItem(statusText, fontTexture);
+        this.statusTextItem.getMesh().getMaterial().setAmbientColour(new Vector4f(0.5f, 0.5f, 0.5f, 10f));
 
-	public Hud(String statusText) throws Exception {
-		FontTexture fontTexture = new FontTexture(FONT, CHARSET);
-		statusTextItem = new TextItem(statusText, fontTexture);
-		statusTextItem.getMesh().getMaterial().setAmbientColour(new Vector4f(1, 1, 1, 1));
+        // Create list that holds the items that compose the HUD
+        gameItems = new GameItem[]{statusTextItem};
+    }
 
-		// Create compass
-		Mesh mesh = OBJLoader.loadMesh("/models/compass.obj");
-		Material material = new Material();
-		material.setAmbientColour(new Vector4f(1, 0, 0, 1));
-		mesh.setMaterial(material);
-		compassItem = new GameItem(mesh);
-		compassItem.setScale(70.0f);
-		// Rotate to transform it to screen coordinates
-		compassItem.setRotation(0f, 0f, 180f);
-
-		// Create list that holds the items that compose the HUD
-		gameItems = new GameItem[] { statusTextItem, compassItem };
-	}
-
-	public void setStatusText(String statusText) {
-		statusTextItem.setText(statusText);
-	}
-	
-	public void rotateCompass(float angle) {
-		compassItem.setRotation(0, 0, 180 + angle);
-	}
-
-	@Override
-	public GameItem[] getGameItems() {
-		return gameItems;
-	}
-
-	public void updateSize(Window window) {
-		statusTextItem.setPosition(10f, window.getHeight() - 50f, 0);
-		compassItem.setPosition(window.getWidth() - 80.0f, 80f, 0);
-	}
-
+    public void setStatusText(String statusText) {
+        this.statusTextItem.setText(statusText);
+    }
+    
+    @Override
+    public GameItem[] getGameItems() {
+        return gameItems;
+    }
+   
+    public void updateSize(Window window) {
+        this.statusTextItem.setPosition(10f, window.getHeight() - 50f, 0);
+    }
 }

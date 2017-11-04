@@ -10,12 +10,12 @@ uniform int hasTexture;
 
 void main()
 {
-	if(hasTexture == 1)
-	{
-		fragColor = colour * texture(texture_sampler, outTexCoord);
-	}
-	else
-	{
-		fragColor = colour;
-	}
+    if ( hasTexture == 1 )
+    {
+        fragColor = colour * texture(texture_sampler, outTexCoord);
+    }
+    else
+    {
+        fragColor = colour;
+    }
 }
