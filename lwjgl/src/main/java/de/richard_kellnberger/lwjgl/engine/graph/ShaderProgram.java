@@ -13,6 +13,7 @@ import org.lwjgl.system.MemoryStack;
 import de.richard_kellnberger.lwjgl.engine.graph.lights.DirectionalLight;
 import de.richard_kellnberger.lwjgl.engine.graph.lights.PointLight;
 import de.richard_kellnberger.lwjgl.engine.graph.lights.SpotLight;
+import de.richard_kellnberger.lwjgl.engine.graph.weather.Fog;
 
 public class ShaderProgram {
 
@@ -67,6 +68,7 @@ public class ShaderProgram {
 		createUniform(uniformName + ".specular");
 		createUniform(uniformName + ".hasTexture");
 		createUniform(uniformName + ".reflectance");
+		createUniform(uniformName + ".hasNormalMap");
 	}
 
 	public void setUniform(String uniformName, Matrix4f value) {
@@ -94,12 +96,25 @@ public class ShaderProgram {
 		setUniform(uniformName + ".specular", material.getSpecularColour());
 		setUniform(uniformName + ".hasTexture", material.isTextured() ? 1 : 0);
 		setUniform(uniformName + ".reflectance", material.getReflectance());
+		setUniform(uniformName + ".hasNormalMap", material.hasNormalMap() ? 1 : 0);
 	}
 	
 	public void createDirectionalLightUniform(String uniformName) throws Exception {
 		createUniform(uniformName + ".colour");
 		createUniform(uniformName + ".direction");
 		createUniform(uniformName + ".intensity");
+	}
+	
+	public void createFogUniform(String uniformName) throws Exception {
+		createUniform(uniformName + ".active");
+		createUniform(uniformName + ".colour");
+		createUniform(uniformName + ".density");
+	}
+	
+	public void setUniform(String uniformName, Fog fog) {
+		setUniform(uniformName + ".active", fog.isActive() ? 1 : 0);
+		setUniform(uniformName + ".colour", fog.getColour());
+		setUniform(uniformName + ".density", fog.getDensity());
 	}
 	
 	public void setUniform(String uniformName, DirectionalLight dirLight) {

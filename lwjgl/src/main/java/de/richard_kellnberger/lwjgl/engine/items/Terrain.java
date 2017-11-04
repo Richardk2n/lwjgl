@@ -95,7 +95,7 @@ public class Terrain {
 	}
 
 	public float getHeight(Vector3f position) {
-		float result = Float.MIN_VALUE;
+		float result = 0;
 		// For each terrain block we get the bounding box, translate it to view
 		// coordinates
 		// and check if the position is contained in that bounding box

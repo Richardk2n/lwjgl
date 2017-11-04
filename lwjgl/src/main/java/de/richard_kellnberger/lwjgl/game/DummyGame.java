@@ -11,8 +11,14 @@ import de.richard_kellnberger.lwjgl.engine.Scene;
 import de.richard_kellnberger.lwjgl.engine.SceneLight;
 import de.richard_kellnberger.lwjgl.engine.Window;
 import de.richard_kellnberger.lwjgl.engine.graph.Camera;
+import de.richard_kellnberger.lwjgl.engine.graph.Material;
+import de.richard_kellnberger.lwjgl.engine.graph.Mesh;
+import de.richard_kellnberger.lwjgl.engine.graph.OBJLoader;
 import de.richard_kellnberger.lwjgl.engine.graph.Renderer;
+import de.richard_kellnberger.lwjgl.engine.graph.Texture;
 import de.richard_kellnberger.lwjgl.engine.graph.lights.DirectionalLight;
+import de.richard_kellnberger.lwjgl.engine.graph.weather.Fog;
+import de.richard_kellnberger.lwjgl.engine.items.GameItem;
 import de.richard_kellnberger.lwjgl.engine.items.SkyBox;
 import de.richard_kellnberger.lwjgl.engine.items.Terrain;
 
@@ -55,8 +61,35 @@ public class DummyGame implements IGameLogic {
         float minY = -0.1f;
         float maxY = 0.1f;
         int textInc = 40;
-        terrain = new Terrain(terrainSize, terrainScale, minY, maxY, "/textures/heightmap.png", "/textures/terrain.png", textInc);
+        terrain = new Terrain(terrainSize, terrainScale, minY, maxY, "/textures/heightmap3.png", "/textures/terrain.png", textInc);
         scene.setGameItems(terrain.getGameItems());
+        
+        scene.setFog(new Fog(true, new Vector3f(0.5f, 0.5f, 0.5f), 0.15f));
+        
+
+        // Setup  GameItems
+        float reflectance = 0.65f;
+        Texture normalMap = new Texture("/textures/rock_normals.png");
+
+        Mesh quadMesh1 = OBJLoader.loadMesh("/models/quad.obj");
+        Texture texture = new Texture("/textures/rock.png");
+        Material quadMaterial1 = new Material(texture, reflectance);
+        quadMesh1.setMaterial(quadMaterial1);
+        GameItem quadGameItem1 = new GameItem(quadMesh1);
+        quadGameItem1.setPosition(-3f, 0, 0);
+        quadGameItem1.setScale(2.0f);
+        quadGameItem1.setRotation(90, 0, 0);
+
+        Mesh quadMesh2 = OBJLoader.loadMesh("/models/quad.obj");
+        Material quadMaterial2 = new Material(texture, reflectance);
+        quadMaterial2.setNormalMap(normalMap);
+        quadMesh2.setMaterial(quadMaterial2);
+        GameItem quadGameItem2 = new GameItem(quadMesh2);
+        quadGameItem2.setPosition(3f, 0, 0);
+        quadGameItem2.setScale(2.0f);
+        quadGameItem2.setRotation(45, 0, 0);
+
+        scene.setGameItems(new GameItem[]{quadGameItem1, quadGameItem2});
 
         // Setup  SkyBox
         SkyBox skyBox = new SkyBox("/models/skybox.obj", "/textures/skybox.png");
@@ -73,6 +106,8 @@ public class DummyGame implements IGameLogic {
         camera.getPosition().z = 0.0f;
         camera.getPosition().y = -0.2f;
         camera.getRotation().x = 10.f;
+        
+        
     }
     
     private void setupLights() {

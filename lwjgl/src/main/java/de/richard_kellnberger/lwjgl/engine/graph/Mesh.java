@@ -113,6 +113,14 @@ public class Mesh {
 			glBindTexture(GL_TEXTURE_2D, texture.getId());
 		}
 
+		Texture normalMap = material.getNormalMap();
+		if (normalMap != null) {
+			// Activate first texture unit
+			glActiveTexture(GL_TEXTURE1);
+			// Bind the Texture
+			glBindTexture(GL_TEXTURE_2D, normalMap.getId());
+		}
+
 		// Draw the mesh
 		glBindVertexArray(vaoId);
 		glEnableVertexAttribArray(0);

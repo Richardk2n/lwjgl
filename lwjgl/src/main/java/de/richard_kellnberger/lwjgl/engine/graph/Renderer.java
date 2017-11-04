@@ -67,6 +67,7 @@ public class Renderer {
 		sceneShaderProgram.createUniform("projectionMatrix");
 		sceneShaderProgram.createUniform("modelViewMatrix");
 		sceneShaderProgram.createUniform("texture_sampler");
+		sceneShaderProgram.createUniform("normalMap");
 		// Create uniform for material
 		sceneShaderProgram.createMaterialUniform("material");
 		// Create lighting related uniforms
@@ -75,6 +76,8 @@ public class Renderer {
         sceneShaderProgram.createPointLightListUniform("pointLights", MAX_POINT_LIGHTS);
         sceneShaderProgram.createSpotLightListUniform("spotLights", MAX_SPOT_LIGHTS);
 		sceneShaderProgram.createDirectionalLightUniform("directionalLight");
+		
+		sceneShaderProgram.createFogUniform("fog");
 	}
 	
 	private void setupHudShader() throws Exception {
@@ -134,7 +137,10 @@ public class Renderer {
 
 		renderLights(viewMatrix, scene.getSceneLight());
 
+		sceneShaderProgram.setUniform("fog", scene.getFog());
 		sceneShaderProgram.setUniform("texture_sampler", 0);
+		sceneShaderProgram.setUniform("normalMap", 1);
+		
 		// Render each mesh with the associated gameItems
 		Map<Mesh, List<GameItem>> mapMeshes = scene.getGameMeshes();
 		for (Mesh mesh : mapMeshes.keySet()) {

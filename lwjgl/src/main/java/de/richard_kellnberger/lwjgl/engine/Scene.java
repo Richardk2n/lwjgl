@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import de.richard_kellnberger.lwjgl.engine.graph.Mesh;
+import de.richard_kellnberger.lwjgl.engine.graph.weather.Fog;
 import de.richard_kellnberger.lwjgl.engine.items.GameItem;
 import de.richard_kellnberger.lwjgl.engine.items.SkyBox;
 
@@ -16,9 +17,12 @@ public class Scene {
     private SkyBox skyBox;
     
     private SceneLight sceneLight;
+    
+    private Fog fog;
 
     public Scene() {
         meshMap = new HashMap<Mesh, List<GameItem>>();
+        fog = Fog.NOFOG;
     }
     
     public Map<Mesh, List<GameItem>> getGameMeshes() {
@@ -59,6 +63,20 @@ public class Scene {
 
     public void setSceneLight(SceneLight sceneLight) {
         this.sceneLight = sceneLight;
+    }
+
+    /**
+     * @return the fog
+     */
+    public Fog getFog() {
+        return fog;
+    }
+
+    /**
+     * @param fog the fog to set
+     */
+    public void setFog(Fog fog) {
+        this.fog = fog;
     }
     
 }
